@@ -2,29 +2,44 @@ import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 import { useNavigate, Link } from 'react-router-dom'
 import { toast } from 'sonner'
-import { Globe, MapPin } from "lucide-react"
+import { Globe, UserPlus } from "lucide-react"
 
-export default function LoginPage() {
-    const { login } = useAuth()
+export default function SignUpPage() {
+    const { signup } = useAuth()
     const navigate = useNavigate()
     const [email, setEmail] = useState('')
+    const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
+    const [confirmPassword, setConfirmPassword] = useState('')
     const [loading, setLoading] = useState(false)
 
-    const handleLogin = async () => {
+    const handleSignUp = async () => {
+        if (!email || !username || !password) {
+            toast.error('Please fill in all fields')
+            return
+        }
+        if (password !== confirmPassword) {
+            toast.error('Passwords do not match')
+            return
+        }
+        if (password.length < 6) {
+            toast.error('Password must be at least 6 characters')
+            return
+        }
         setLoading(true)
         try {
-            await login(email, password)
+            await signup(email, password, username)
             navigate('/home', { replace: true })
-        } catch {
-            toast.error('Invalid email or password')
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : 'Sign up failed'
+            toast.error(message)
         } finally {
             setLoading(false)
         }
     }
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter') handleLogin()
+        if (e.key === 'Enter') handleSignUp()
     }
 
     return (
@@ -48,8 +63,8 @@ export default function LoginPage() {
             <div className="glass-card relative z-10 w-full max-w-sm rounded-2xl p-8 flex flex-col gap-6">
                 {/* Header */}
                 <div className="flex flex-col gap-1">
-                    <h1 className="text-xl font-semibold text-white">Sign in</h1>
-                    <p className="text-sm text-slate-400">Access your geolocation dashboard</p>
+                    <h1 className="text-xl font-semibold text-white">Create account</h1>
+                    <p className="text-sm text-slate-400">Join GeoPoint to start tracking IPs</p>
                 </div>
 
                 {/* Fields */}
@@ -67,6 +82,18 @@ export default function LoginPage() {
                         />
                     </div>
                     <div className="flex flex-col gap-1.5">
+                        <label className="text-xs text-slate-400 uppercase tracking-wider">Username</label>
+                        <input
+                            type="text"
+                            className="w-full px-4 py-2.5 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-cyan-500/60 transition-all"
+                            style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(0,212,255,0.2)' }}
+                            placeholder="yourname"
+                            value={username}
+                            onChange={e => setUsername(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                        />
+                    </div>
+                    <div className="flex flex-col gap-1.5">
                         <label className="text-xs text-slate-400 uppercase tracking-wider">Password</label>
                         <input
                             type="password"
@@ -78,23 +105,35 @@ export default function LoginPage() {
                             onKeyDown={handleKeyDown}
                         />
                     </div>
+                    <div className="flex flex-col gap-1.5">
+                        <label className="text-xs text-slate-400 uppercase tracking-wider">Confirm Password</label>
+                        <input
+                            type="password"
+                            className="w-full px-4 py-2.5 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-cyan-500/60 transition-all"
+                            style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(0,212,255,0.2)' }}
+                            placeholder="••••••••"
+                            value={confirmPassword}
+                            onChange={e => setConfirmPassword(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                        />
+                    </div>
                 </div>
 
                 {/* Submit */}
                 <button
                     className="btn-cyan w-full py-2.5 rounded-lg text-sm font-semibold cursor-pointer flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
-                    onClick={handleLogin}
+                    onClick={handleSignUp}
                     disabled={loading}
                 >
-                    <MapPin className="h-4 w-4" />
-                    {loading ? 'Signing in…' : 'Sign in'}
+                    <UserPlus className="h-4 w-4" />
+                    {loading ? 'Creating account…' : 'Create account'}
                 </button>
 
-                {/* Link to signup */}
+                {/* Link to login */}
                 <p className="text-center text-sm text-slate-400">
-                    Don't have an account?{' '}
-                    <Link to="/signup" className="text-cyan-400 hover:text-cyan-300 transition-colors">
-                        Sign up
+                    Already have an account?{' '}
+                    <Link to="/login" className="text-cyan-400 hover:text-cyan-300 transition-colors">
+                        Sign in
                     </Link>
                 </p>
             </div>

@@ -1,4 +1,5 @@
 import LoginPage from './pages/login/LoginPage'
+import SignUpPage from './pages/signup/SignUpPage'
 import HomePage from './pages/home/HomePage'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
@@ -37,6 +38,11 @@ export default function App() {
                 <Route path="/login" element={
                     <GuestRoute>
                         <LoginPage />
+                    </GuestRoute>
+                } />
+                <Route path="/signup" element={
+                    <GuestRoute>
+                        <SignUpPage />
                     </GuestRoute>
                 } />
                 <Route path="/home" element={

@@ -10,6 +10,7 @@ interface User {
 interface AuthContextType {
     user: User | null
     loading: boolean
+    signup: (email: string, password: string, username: string) => Promise<void>
     login: (email: string, password: string) => Promise<void>
     logout: () => Promise<void>
 }
@@ -27,6 +28,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             .finally(() => setLoading(false))
     }, [])
 
+    const signup = async (email: string, password: string, username: string) => {
+        await AuthService.signup(email, password, username)
+        const { user } = await AuthService.login(email, password)
+        setUser(user)
+    }
+
     const login = async (email: string, password: string) => {
         const { user } = await AuthService.login(email, password)
         setUser(user)
@@ -38,7 +45,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     return (
-        <AuthContext.Provider value={{ user, loading, login, logout }}>
+        <AuthContext.Provider value={{ user, loading, signup, login, logout }}>
             {children}
         </AuthContext.Provider>
     )
