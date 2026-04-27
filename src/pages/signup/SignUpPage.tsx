@@ -1,12 +1,11 @@
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
-import { useNavigate, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
 import { Globe, UserPlus } from "lucide-react"
 
 export default function SignUpPage() {
     const { signup } = useAuth()
-    const navigate = useNavigate()
     const [email, setEmail] = useState('')
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
@@ -29,7 +28,6 @@ export default function SignUpPage() {
         setLoading(true)
         try {
             await signup(email, password, username)
-            navigate('/home', { replace: true })
         } catch (err: unknown) {
             const message = err instanceof Error ? err.message : 'Sign up failed'
             toast.error(message)

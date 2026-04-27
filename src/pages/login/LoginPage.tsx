@@ -1,12 +1,11 @@
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
-import { useNavigate, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
 import { Globe, MapPin } from "lucide-react"
 
 export default function LoginPage() {
     const { login } = useAuth()
-    const navigate = useNavigate()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [loading, setLoading] = useState(false)
@@ -15,7 +14,6 @@ export default function LoginPage() {
         setLoading(true)
         try {
             await login(email, password)
-            navigate('/home', { replace: true })
         } catch {
             toast.error('Invalid email or password')
         } finally {
